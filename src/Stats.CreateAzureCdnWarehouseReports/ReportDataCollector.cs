@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -57,6 +58,9 @@ namespace Stats.CreateAzureCdnWarehouseReports
             ApplicationInsightsHelper applicationInsightsHelper)
         {
             logger.LogInformation("Getting list of dirty packages IDs.");
+
+            logger.LogInformation("[Debug] Sleeping for 10 seconds, before getting dirty package Ids!");
+            Thread.Sleep(10000);
 
             IReadOnlyCollection<DirtyPackageId> packageIds = new List<DirtyPackageId>();
 

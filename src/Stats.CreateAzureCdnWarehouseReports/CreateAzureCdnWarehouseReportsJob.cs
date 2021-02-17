@@ -144,6 +144,9 @@ namespace Stats.CreateAzureCdnWarehouseReports
 
                 Logger.LogInformation("[Debug] Finished generating standard reports!");
 
+                Logger.LogInformation("[Debug] Sleeping for 10 seconds, after generating standard reports!");
+                Thread.Sleep(10000);
+
                 await RebuildPackageReports(destinationContainer, reportGenerationTime);
                 await CleanInactiveRecentPopularityDetailByPackageReports(destinationContainer, reportGenerationTime);
             }
@@ -275,7 +278,7 @@ namespace Stats.CreateAzureCdnWarehouseReports
 
             Logger.LogInformation("[Debug] Processing top100 packages!");
 
-            Logger.LogInformation("[Debug] Sleeping for 10 seconds!");
+            Logger.LogInformation("[Debug] Sleeping for 10 seconds, before processing top100 packages!");
             Thread.Sleep(10000);
 
             var top100Task = Parallel.ForEach(top100, new ParallelOptions { MaxDegreeOfParallelism = _perPackageReportDegreeOfParallelism }, dirtyPackageId =>
