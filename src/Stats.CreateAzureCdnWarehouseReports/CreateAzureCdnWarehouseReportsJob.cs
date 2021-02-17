@@ -143,9 +143,7 @@ namespace Stats.CreateAzureCdnWarehouseReports
                 }
 
                 Logger.LogInformation("[Debug] Finished generating standard reports!");
-
-                Logger.LogInformation("[Debug] Sleeping for 10 seconds, after generating standard reports!");
-                Thread.Sleep(10000);
+                await Task.Delay(10000);
 
                 await RebuildPackageReports(destinationContainer, reportGenerationTime);
                 await CleanInactiveRecentPopularityDetailByPackageReports(destinationContainer, reportGenerationTime);
@@ -252,6 +250,7 @@ namespace Stats.CreateAzureCdnWarehouseReports
         private async Task RebuildPackageReports(CloudBlobContainer destinationContainer, DateTime reportGenerationTime)
         {
             Logger.LogInformation("[Debug] Getting dirty package Ids!");
+            await Task.Delay(10000);
 
             var dirtyPackageIds = await ReportDataCollector.GetDirtyPackageIds(
                 LoggerFactory.CreateLogger<ReportDataCollector>(),
@@ -277,9 +276,7 @@ namespace Stats.CreateAzureCdnWarehouseReports
                 _applicationInsightsHelper);
 
             Logger.LogInformation("[Debug] Processing top100 packages!");
-
-            Logger.LogInformation("[Debug] Sleeping for 10 seconds, before processing top100 packages!");
-            Thread.Sleep(10000);
+            await Task.Delay(10000);
 
             var top100Task = Parallel.ForEach(top100, new ParallelOptions { MaxDegreeOfParallelism = _perPackageReportDegreeOfParallelism }, dirtyPackageId =>
             {
@@ -294,6 +291,7 @@ namespace Stats.CreateAzureCdnWarehouseReports
             });
 
             Logger.LogInformation("[Debug] Processed top 100 packages!");
+            await Task.Delay(10000);
 
             // once top 100 is processed, continue with the rest
             if (top100Task.IsCompleted)

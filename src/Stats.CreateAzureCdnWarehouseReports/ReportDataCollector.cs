@@ -39,6 +39,7 @@ namespace Stats.CreateAzureCdnWarehouseReports
         public async Task<DataTable> CollectAsync(DateTime reportGenerationTime, params Tuple<string, int, string>[] parameters)
         {
             _logger.LogInformation("{ProcedureName}: Collecting data", _procedureName);
+            await Task.Delay(10000);
 
             DataTable table = null;
 
@@ -47,6 +48,8 @@ namespace Stats.CreateAzureCdnWarehouseReports
 
             Debug.Assert(table != null);
             _logger.LogInformation("{ProcedureName}: Collected {RowsCount} rows", _procedureName, table.Rows.Count);
+            await Task.Delay(10000);
+
             return table;
         }
 
@@ -58,9 +61,7 @@ namespace Stats.CreateAzureCdnWarehouseReports
             ApplicationInsightsHelper applicationInsightsHelper)
         {
             logger.LogInformation("Getting list of dirty packages IDs.");
-
-            logger.LogInformation("[Debug] Sleeping for 10 seconds, before getting dirty package Ids!");
-            Thread.Sleep(10000);
+            await Task.Delay(10000);
 
             IReadOnlyCollection<DirtyPackageId> packageIds = new List<DirtyPackageId>();
 
@@ -71,6 +72,7 @@ namespace Stats.CreateAzureCdnWarehouseReports
                 applicationInsightsHelper);
 
             logger.LogInformation("Found {DirtyPackagesCount} dirty packages to update.", packageIds.Count);
+            await Task.Delay(10000);
 
             return packageIds;
         }
@@ -110,7 +112,14 @@ namespace Stats.CreateAzureCdnWarehouseReports
                 Exception caught;
                 try
                 {
+                    logger.LogInformation("[Debug] Retry the query!");
+                    await Task.Delay(10000);
+
                     await action();
+
+                    logger.LogInformation("[Debug] The query succeeded!");
+                    await Task.Delay(10000);
+
                     break;
                 }
                 catch (Exception ex)
@@ -124,6 +133,9 @@ namespace Stats.CreateAzureCdnWarehouseReports
                         caught = ex;
                     }
                 }
+
+                logger.LogInformation("[Debug] The query failed!");
+                await Task.Delay(10000);
 
                 SqlConnection.ClearAllPools();
                 logger.LogError("SQL Invocation failed, retrying. {RemainingAttempts} attempts remaining. Exception: {Exception}", attempts, caught);
