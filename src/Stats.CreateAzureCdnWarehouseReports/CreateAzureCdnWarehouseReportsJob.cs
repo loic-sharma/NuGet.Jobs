@@ -146,7 +146,14 @@ namespace Stats.CreateAzureCdnWarehouseReports
                 await Task.Delay(10000);
 
                 await RebuildPackageReports(destinationContainer, reportGenerationTime);
+
+                Logger.LogInformation("[Debug] Finished rebuilding package reports!");
+                await Task.Delay(10000);
+
                 await CleanInactiveRecentPopularityDetailByPackageReports(destinationContainer, reportGenerationTime);
+
+                Logger.LogInformation("[Debug] Finished cleaning up inactive packages!");
+                await Task.Delay(10000);
             }
             else if (ReportNames.StandardReports.Contains(_reportNameConfig))
             {
@@ -161,6 +168,7 @@ namespace Stats.CreateAzureCdnWarehouseReports
 
             Logger.LogInformation("Generated reports from {DataSource}/{InitialCatalog} and saving to {AccountName}/{Container}",
                 statisticsDatabase.DataSource, statisticsDatabase.InitialCatalog, _cloudStorageAccount.Credentials.AccountName, destinationContainer.Name);
+            await Task.Delay(10000);
 
             // totals reports
             Stopwatch stopwatch;
@@ -259,10 +267,14 @@ namespace Stats.CreateAzureCdnWarehouseReports
                 _sqlCommandTimeoutSeconds,
                 _applicationInsightsHelper);
 
-            Logger.LogInformation("[Debug] Got dirty package Ids! - Line 257");
+            Logger.LogInformation("[Debug] Got dirty package Ids!");
+            await Task.Delay(10000);
 
             if (!dirtyPackageIds.Any())
             {
+                Logger.LogInformation("[Debug] No dirty packages are found!");
+                await Task.Delay(10000);
+
                 return;
             }
 
@@ -275,7 +287,7 @@ namespace Stats.CreateAzureCdnWarehouseReports
                 _sqlCommandTimeoutSeconds,
                 _applicationInsightsHelper);
 
-            Logger.LogInformation("[Debug] Processing top100 packages!");
+            Logger.LogInformation("[Debug] Processing top100 dirty packages!");
             await Task.Delay(10000);
 
             var top100Task = Parallel.ForEach(top100, new ParallelOptions { MaxDegreeOfParallelism = _perPackageReportDegreeOfParallelism }, dirtyPackageId =>
@@ -290,7 +302,10 @@ namespace Stats.CreateAzureCdnWarehouseReports
                 _applicationInsightsHelper.TrackReportProcessed(reportBuilder.ReportName + " report", packageId);
             });
 
-            Logger.LogInformation("[Debug] Processed top 100 packages!");
+            Logger.LogInformation("[Debug] Processed top 100 dirty packages!");
+            await Task.Delay(10000);
+
+            Logger.LogInformation("[Debug] Processing the rest dirty packages!");
             await Task.Delay(10000);
 
             // once top 100 is processed, continue with the rest
@@ -334,40 +349,52 @@ namespace Stats.CreateAzureCdnWarehouseReports
                     await ReportDataCollector.UpdateDirtyPackageIdCursor(OpenSqlConnectionAsync<StatisticsDbConfiguration>, runToCursor, _sqlCommandTimeoutSeconds);
                 }
             }
+
+            Logger.LogInformation("[Debug] Processed the rest dirty packages!");
+            await Task.Delay(10000);
         }
 
         private async Task CleanInactiveRecentPopularityDetailByPackageReports(CloudBlobContainer destinationContainer, DateTime reportGenerationTime)
         {
-            Logger.LogDebug("Getting list of inactive packages.");
+            Logger.LogInformation("[Debug] Getting list of inactive packages.");
+            await Task.Delay(10000);
+
             var packageIds = await ReportDataCollector.ListInactivePackageIdReports(
                 OpenSqlConnectionAsync<StatisticsDbConfiguration>,
                 reportGenerationTime,
                 _sqlCommandTimeoutSeconds);
 
-            Logger.LogInformation("Found {InactivePackageCount} inactive packages.", packageIds.Count);
+            Logger.LogInformation("[Debug] Found {InactivePackageCount} inactive packages.", packageIds.Count);
+            await Task.Delay(10000);
 
             // Collect the list of reports
             var subContainer = "recentpopularity/";
-            Logger.LogDebug("Collecting list of package detail reports");
+            Logger.LogInformation("[Debug] Collecting list of package detail reports");
+            await Task.Delay(10000);
+
             var reports = destinationContainer.ListBlobs(subContainer + _recentPopularityDetailByPackageReportBaseName)
                     .OfType<CloudBlockBlob>()
                     .Select(b => b.Name);
 
             var reportSet = new HashSet<string>(reports);
-            Logger.LogInformation("Collected {PackageDetailReportCount} package detail reports", reportSet.Count);
+            Logger.LogInformation("[Debug] Collected {PackageDetailReportCount} package detail reports", reportSet.Count);
+            await Task.Delay(10000);
 
-            Parallel.ForEach(packageIds, new ParallelOptions { MaxDegreeOfParallelism = 8 }, async id =>
+            // Change "MaxDegreeOfParallelism" from 8 to 1.
+            Parallel.ForEach(packageIds, new ParallelOptions { MaxDegreeOfParallelism = 1 }, async id =>
              {
                  string reportName = _recentPopularityDetailByPackageReportBaseName + id;
                  string blobName = subContainer + reportName + ReportNames.Extension;
                  if (reportSet.Contains(blobName))
                  {
                      var blob = destinationContainer.GetBlockBlobReference(blobName);
-                     Logger.LogDebug("{ReportName}: Deleting empty report from {BlobUri}", reportName, blob.Uri.AbsoluteUri);
+                     Logger.LogInformation("[Debug] {ReportName}: Deleting empty report from {BlobUri}", reportName, blob.Uri.AbsoluteUri);
+                     await Task.Delay(10000);
 
                      await blob.DeleteIfExistsAsync();
 
-                     Logger.LogInformation("{ReportName}: Deleted empty report from {BlobUri}", reportName, blob.Uri.AbsoluteUri);
+                     Logger.LogInformation("[Debug] {ReportName}: Deleted empty report from {BlobUri}", reportName, blob.Uri.AbsoluteUri);
+                     await Task.Delay(10000);
                  }
              });
         }

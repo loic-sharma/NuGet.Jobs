@@ -25,10 +25,13 @@ namespace Stats.CreateAzureCdnWarehouseReports
             var blob = _destinationContainer.GetBlockBlobReference(reportName + ".json");
             blob.Properties.ContentType = _contentTypeJson;
 
-            _logger.LogInformation("{ReportName}: Writing report to {ReportUri}", reportName, blob.Uri.AbsoluteUri);
+            _logger.LogInformation("[Debug] {ReportName}: Writing report to {ReportUri}", reportName, blob.Uri.AbsoluteUri);
+            await Task.Delay(10000);
 
             await blob.UploadTextAsync(json);
-            _logger.LogInformation("{ReportName}: Wrote report to {ReportUri}", reportName, blob.Uri.AbsoluteUri);
+
+            _logger.LogInformation("[Debug] {ReportName}: Wrote report to {ReportUri}", reportName, blob.Uri.AbsoluteUri);
+            await Task.Delay(10000);
         }
     }
 }
