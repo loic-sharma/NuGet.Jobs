@@ -4,6 +4,7 @@
 using Autofac;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.TraceListener;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ using NuGet.Services.Logging;
 using NuGet.Services.SearchService.Controllers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -66,6 +68,12 @@ namespace NuGet.Services.SearchService
                 o.InstrumentationKey = Configuration.GetValue<string>("ApplicationInsights_InstrumentationKey");
                 o.EnableAdaptiveSampling = false;
             });
+
+            if (!Trace.Listeners.OfType<ApplicationInsightsTraceListener>().Any())
+            {
+                Trace.Listeners.Add(new ApplicationInsightsTraceListener(Configuration.GetValue<string>("ApplicationInsights_InstrumentationKey")));
+            }
+
             services.AddSingleton<ITelemetryInitializer>(new KnownOperationNameEnricher(new[]
             {
                 GetOperationName<SearchController>(HttpMethod.Get, nameof(SearchController.AutocompleteAsync)),
