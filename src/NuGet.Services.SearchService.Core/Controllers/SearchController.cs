@@ -67,15 +67,15 @@ namespace NuGet.Services.SearchService.Controllers
         public async Task<ActionResult> Benchmark()
         {
             var hashes = new List<string>();
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < 10; ++i)
             {
                 var c = _configurationFactory();
                 var h = GetHash(c.Value.StorageConnectionString);
                 hashes.Add(h);
-                await Task.Delay(i < 2 ? 1000 : 2000);
+                await Task.Delay(i < 5 ? 1000 : 2000);
             }
 
-            return new JsonResult(new { hashes, host = Environment.MachineName });
+            return new JsonResult(new { hashes });
         }
 
         private static string GetHash(string str)
