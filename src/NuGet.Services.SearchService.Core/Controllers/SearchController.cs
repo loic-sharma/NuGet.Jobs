@@ -2,13 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using NuGet.Services.AzureSearch.SearchService;
 using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NuGet.Services.SearchService.Controllers
@@ -22,18 +18,15 @@ namespace NuGet.Services.SearchService.Controllers
         private readonly IAuxiliaryDataCache _auxiliaryDataCache;
         private readonly ISearchService _searchService;
         private readonly ISearchStatusService _statusService;
-        private readonly Func<IOptionsSnapshot<SearchServiceConfiguration>> _configurationFactory;
 
         public SearchController(
             IAuxiliaryDataCache auxiliaryDataCache,
             ISearchService searchService,
-            ISearchStatusService statusService,
-            Func<IOptionsSnapshot<SearchServiceConfiguration>> configurationFactory)
+            ISearchStatusService statusService)
         {
             _auxiliaryDataCache = auxiliaryDataCache ?? throw new ArgumentNullException(nameof(auxiliaryDataCache));
             _searchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
             _statusService = statusService ?? throw new ArgumentNullException(nameof(statusService));
-            _configurationFactory = configurationFactory ?? throw new ArgumentNullException(nameof(configurationFactory));
         }
 
         [HttpGet]
@@ -60,31 +53,6 @@ namespace NuGet.Services.SearchService.Controllers
             var statusCode = result.Success ? HttpStatusCode.OK : HttpStatusCode.InternalServerError;
 
             return new JsonResult(result) { StatusCode = (int)statusCode };
-        }
-
-        [HttpGet]
-        [Route("/search/benchmark")]
-        public async Task<ActionResult> Benchmark()
-        {
-            var hashes = new List<string>();
-            for (int i = 0; i < 10; ++i)
-            {
-                var c = _configurationFactory();
-                var h = GetHash(c.Value.StorageConnectionString);
-                hashes.Add(h);
-                await Task.Delay(i < 5 ? 1000 : 2000);
-            }
-
-            return new JsonResult(new { hashes });
-        }
-
-        private static string GetHash(string str)
-        {
-            using (var hasher = SHA256.Create())
-            {
-                var hash = hasher.ComputeHash(Encoding.UTF8.GetBytes(str));
-                return BitConverter.ToString(hash).Replace("-", "");
-            }
         }
 
         [HttpGet]
