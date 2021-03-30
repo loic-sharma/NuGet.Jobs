@@ -580,7 +580,8 @@ namespace NuGet.Services.SearchService.Controllers
                 _target = new SearchController(
                     _auxiliaryDataCache.Object,
                     _searchService.Object,
-                    _statusService.Object);
+                    _statusService.Object,
+                    () => null);
             }
         }
     }
