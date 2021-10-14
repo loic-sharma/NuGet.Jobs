@@ -32,6 +32,7 @@ using NuGet.Services.Messaging;
 using NuGet.Services.Messaging.Email;
 using NuGet.Services.ServiceBus;
 using NuGet.Services.Sql;
+using NuGet.Services.Validation.Orchestrator.MetadataScan;
 using NuGet.Services.Validation.Orchestrator.PackageSigning.ScanAndSign;
 using NuGet.Services.Validation.Orchestrator.Telemetry;
 using NuGet.Services.Validation.PackageSigning.ProcessSignature;
@@ -62,6 +63,7 @@ namespace NuGet.Services.Validation.Orchestrator
         private const string FlatContainerConfigurationSectionName = "FlatContainer";
         private const string LeaseConfigurationSectionName = "Leases";
         private const string SasDefinitionConfigurationSectionName = "SasDefinitions";
+        private const string MetadataValidatorSectionName = "MetadataValidator";
 
         private const string EmailBindingKey = EmailConfigurationSectionName;
         private const string PackageVerificationTopicClientBindingKey = "PackageVerificationTopicClient";
@@ -126,6 +128,7 @@ namespace NuGet.Services.Validation.Orchestrator
             services.Configure<FlatContainerConfiguration>(configurationRoot.GetSection(FlatContainerConfigurationSectionName));
             services.Configure<LeaseConfiguration>(configurationRoot.GetSection(LeaseConfigurationSectionName));
             services.Configure<SasDefinitionConfiguration>(configurationRoot.GetSection(SasDefinitionConfigurationSectionName));
+            services.Configure<MetadataScannerConfiguration>(configurationRoot.GetSection(MetadataValidatorSectionName));
 
             services.Configure<SymbolsValidationConfiguration>(configurationRoot.GetSection(SymbolsValidatorSectionName));
             services.Configure<SymbolsIngesterConfiguration>(configurationRoot.GetSection(SymbolsIngesterSectionName));

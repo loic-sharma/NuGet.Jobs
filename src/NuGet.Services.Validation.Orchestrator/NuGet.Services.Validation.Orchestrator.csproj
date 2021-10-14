@@ -58,6 +58,8 @@
     <Compile Include="EntityStatusProcessor.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="IValidatorProvider.cs" />
+    <Compile Include="MetadataScan\MetadataScannerConfiguration.cs" />
+    <Compile Include="MetadataScan\NuGetMetadataScanner.cs" />
     <Compile Include="PackageStatusProcessor.cs" />
     <Compile Include="Services\MessageServiceConfiguration.cs" />
     <Compile Include="Services\OrchestratorContentFileMetadataService.cs" />
