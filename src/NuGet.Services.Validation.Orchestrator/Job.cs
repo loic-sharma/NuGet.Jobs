@@ -298,6 +298,7 @@ namespace NuGet.Services.Validation.Orchestrator
                     ConfigurePackageCertificatesValidator(containerBuilder);
                     ConfigureScanAndSignProcessor(containerBuilder);
                     ConfigureFlatContainer(containerBuilder);
+                    ConfigureMetadataValidator(containerBuilder);
                     break;
                 case ValidatingType.SymbolPackage:
                     ConfigureSymbolScanValidator(containerBuilder);
@@ -424,6 +425,13 @@ namespace NuGet.Services.Validation.Orchestrator
             builder
                 .RegisterType<ScanAndSignProcessor>()
                 .WithKeyedParameter(typeof(IValidatorStateService), ScanAndSignBindingKey)
+                .AsSelf();
+        }
+
+        private void ConfigureMetadataValidator(ContainerBuilder builder)
+        {
+            builder
+                .RegisterType<NuGetMetadataScanner>()
                 .AsSelf();
         }
 
