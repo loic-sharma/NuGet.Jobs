@@ -76,7 +76,7 @@ namespace NuGet.Services.AzureSearch.SearchService
             }
             else
             {
-                ApplySearchIndexFilter(searchParameters, request, isDefaultSearch, request.PackageType);
+                ApplySearchIndexFilter(searchParameters, request, isDefaultSearch, request.PackageType, request.SupportedFramework);
             }
 
             return searchParameters;
@@ -87,7 +87,7 @@ namespace NuGet.Services.AzureSearch.SearchService
             var searchParameters = NewSearchParameters();
 
             ApplyPaging(searchParameters, request);
-            ApplySearchIndexFilter(searchParameters, request, isDefaultSearch, request.PackageType);
+            ApplySearchIndexFilter(searchParameters, request, isDefaultSearch, request.PackageType, request.SupportedFramework);
 
             return searchParameters;
         }
@@ -140,7 +140,8 @@ namespace NuGet.Services.AzureSearch.SearchService
             SearchParameters searchParameters,
             SearchRequest request,
             bool isDefaultSearch,
-            string packageType)
+            string packageType,
+            string supportedFramework = null)
         {
             var searchFilters = GetSearchFilters(request);
 
@@ -156,6 +157,11 @@ namespace NuGet.Services.AzureSearch.SearchService
             if (packageType != null && PackageIdValidator.IsValidPackageId(packageType))
             {
                 filterString += $" and {IndexFields.Search.FilterablePackageTypes}/any(p: p eq '{packageType.ToLowerInvariant()}')";
+            }
+
+            if (supportedFramework != null)
+            {
+                filterString += $" and supportedFrameworks/any(f: f eq '{supportedFramework.ToLowerInvariant()}')";
             }
 
             searchParameters.Filter = filterString;

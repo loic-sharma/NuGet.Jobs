@@ -112,6 +112,10 @@ namespace NuGet.Services.AzureSearch
             document.SortableTitle = GetSortableTitle(package.Title, packageId);
             document.Summary = package.Summary;
             document.Tags = package.Tags == null ? null : Utils.SplitTags(package.Tags);
+            document.SupportedFrameworks = package.SupportedFrameworks == null ? null : package.SupportedFrameworks
+                                                                                                .Where(f => !f.FrameworkName.IsUnsupported)
+                                                                                                .Select(f => f.FrameworkName.GetShortFolderName())
+                                                                                                .ToArray();
             document.Title = GetTitle(package.Title, packageId);
             document.TokenizedPackageId = packageId;
 

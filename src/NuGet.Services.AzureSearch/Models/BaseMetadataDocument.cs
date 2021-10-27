@@ -72,6 +72,11 @@ namespace NuGet.Services.AzureSearch
         public string Summary { get; set; }
 
         [IsSearchable]
+        [IsFilterable]
+        [Analyzer(TagsCustomAnalyzer.Name)]
+        public string[] SupportedFrameworks { get; set; }
+
+        [IsSearchable]
         [Analyzer(TagsCustomAnalyzer.Name)]
         public string[] Tags { get; set; }
 

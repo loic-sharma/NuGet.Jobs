@@ -26,6 +26,7 @@ namespace NuGet.Services.AzureSearch.SearchService
         public static readonly string SortableTitle = Name(nameof(BaseMetadataDocument.SortableTitle));
         public static readonly string Summary = Name(nameof(BaseMetadataDocument.Summary));
         public static readonly string Tags = Name(nameof(BaseMetadataDocument.Tags));
+        public static readonly string SupportedFrameworks = Name(nameof(BaseMetadataDocument.SupportedFrameworks));
         public static readonly string Title = Name(nameof(BaseMetadataDocument.Title));
         public static readonly string TokenizedPackageId = Name(nameof(BaseMetadataDocument.TokenizedPackageId));
 
