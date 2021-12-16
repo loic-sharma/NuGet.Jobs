@@ -171,6 +171,15 @@ namespace NuGet.Jobs.Catalog2Registration
             catalogEntry.RequireLicenseAcceptance = packageDetails.RequireLicenseAcceptance ?? false;
             catalogEntry.Summary = packageDetails.Summary ?? string.Empty;
 
+            if (packageDetails.SupportedFrameworks != null && packageDetails.SupportedFrameworks.Count > 0)
+            {
+                catalogEntry.SupportedFrameworks = packageDetails.SupportedFrameworks;
+            }
+            else
+            {
+                catalogEntry.SupportedFrameworks = new List<string> { string.Empty };
+            }
+
             if (packageDetails.Tags != null && packageDetails.Tags.Count > 0)
             {
                 catalogEntry.Tags = packageDetails.Tags;

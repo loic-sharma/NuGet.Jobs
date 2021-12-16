@@ -76,6 +76,9 @@ namespace NuGet.Protocol.Catalog
         [JsonProperty("summary")]
         public string Summary { get; set; }
 
+        [JsonProperty("supportedFrameworks")]
+        public List<string> SupportedFrameworks { get; set; }
+
         [JsonProperty("tags")]
         public List<string> Tags { get; set; }
 

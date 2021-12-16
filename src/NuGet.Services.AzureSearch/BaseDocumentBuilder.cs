@@ -88,6 +88,10 @@ namespace NuGet.Services.AzureSearch
             // If the version-specific ID is available, use it. Not all records have this value populated so fall back
             // to whatever package ID casing is provided.
             packageId = package.Id ?? packageId;
+            if (package.Id == "AdvayTest")
+            {
+                Console.WriteLine("AdvayTest found");
+            }
 
             document.Authors = package.FlattenedAuthors;
             document.Copyright = package.Copyright;
@@ -114,7 +118,7 @@ namespace NuGet.Services.AzureSearch
             document.Tags = package.Tags == null ? null : Utils.SplitTags(package.Tags);
             document.SupportedFrameworks = package.SupportedFrameworks == null ? null : package.SupportedFrameworks
                                                                                                 .Where(f => !f.FrameworkName.IsUnsupported)
-                                                                                                .Select(f => f.FrameworkName.GetShortFolderName())
+                                                                                                .Select(f => f.TargetFramework)
                                                                                                 .ToArray();
             document.Title = GetTitle(package.Title, packageId);
             document.TokenizedPackageId = packageId;
@@ -169,6 +173,7 @@ namespace NuGet.Services.AzureSearch
             document.SemVerLevel = leaf.IsSemVer2() ? SemVerLevelKey.SemVer2 : SemVerLevelKey.Unknown;
             document.SortableTitle = GetSortableTitle(leaf.Title, leaf.PackageId);
             document.Summary = leaf.Summary;
+            document.SupportedFrameworks = leaf.SupportedFrameworks == null ? null : leaf.SupportedFrameworks.ToArray();
             document.Tags = leaf.Tags == null ? null : leaf.Tags.ToArray();
             document.Title = GetTitle(leaf.Title, leaf.PackageId);
             document.TokenizedPackageId = leaf.PackageId;

@@ -146,6 +146,7 @@ namespace NuGet.Services.AzureSearch
       ""requiresLicenseAcceptance"": true,
       ""sortableTitle"": ""windows azure storage"",
       ""summary"": ""Summary."",
+      ""supportedFrameworks"": [],
       ""tags"": [
         ""Microsoft"",
         ""Azure"",
