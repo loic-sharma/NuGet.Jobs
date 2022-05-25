@@ -115,6 +115,11 @@ namespace NuGet.Services.AzureSearch
             document.Title = GetTitle(package.Title, packageId);
             document.TokenizedPackageId = packageId;
 
+            document.Vulnerabilities = new Vulnerability[] { };
+
+            Vulnerability vulnSample = new Vulnerability() { AdvisoryUrl = "https://github.com/advisories/GHSA-hpw7-3vq3-mMva", Severity = 3 };
+            document.Vulnerabilities = Enumerable.Repeat(vulnSample, 2).ToArray();
+
             if (package.LicenseExpression != null || package.EmbeddedLicenseType != EmbeddedLicenseFileType.Absent)
             {
                 document.LicenseUrl = LicenseHelper.GetGalleryLicenseUrl(

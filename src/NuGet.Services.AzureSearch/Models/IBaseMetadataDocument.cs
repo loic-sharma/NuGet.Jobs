@@ -37,5 +37,7 @@ namespace NuGet.Services.AzureSearch
         string Summary { get; set; }
         string[] Tags { get; set; }
         string Title { get; set; }
+        Vulnerability[] Vulnerabilities { get; set; }
+        Deprecation Deprecation { get; set; }
     }
 }

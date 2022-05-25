@@ -74,5 +74,10 @@ namespace NuGet.Services.AzureSearch
         /// </summary>
         [SearchableField(AnalyzerName = PackageIdCustomAnalyzer.Name)]
         public string TokenizedPackageId { get; set; }
+
+        [SimpleField]
+        public Deprecation Deprecation { get; set; }
+
+        public Vulnerability[] Vulnerabilities { get; set; }
     }
 }
