@@ -115,10 +115,18 @@ namespace NuGet.Services.AzureSearch
             document.Title = GetTitle(package.Title, packageId);
             document.TokenizedPackageId = packageId;
 
+            // Spoofing Vulnerability info
             document.Vulnerabilities = new Vulnerability[] { };
-
-            Vulnerability vulnSample = new Vulnerability() { AdvisoryUrl = "https://github.com/advisories/GHSA-hpw7-3vq3-mMva", Severity = 3 };
+            Vulnerability vulnSample = new Vulnerability() { AdvisoryUrl = "https://github.com/advisories/GHSA-hpw7-3vq3-mMva",
+                                                             Severity = 3 };
             document.Vulnerabilities = Enumerable.Repeat(vulnSample, 2).ToArray();
+
+            // Spoofing Deprecation info
+            AlternatePackage altPackageSample = new AlternatePackage() { Id = "altPackageId", Range = "[0.0.1, )" };
+            string[] reasonsSample = new string[] { "Legacy" };
+            document.Deprecation = new Deprecation() { AlternatePackage = altPackageSample,
+                                                         Message = "https://github.com/advisories/GHSA-hpw7-3vq3-mMva",
+                                                         Reasons = reasonsSample };
 
             if (package.LicenseExpression != null || package.EmbeddedLicenseType != EmbeddedLicenseFileType.Absent)
             {
