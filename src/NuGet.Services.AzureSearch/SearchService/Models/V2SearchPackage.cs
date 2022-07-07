@@ -29,17 +29,12 @@ namespace NuGet.Services.AzureSearch.SearchService
         public DateTimeOffset? LastEdited { get; set; }
         public long DownloadCount { get; set; }
         public string FlattenedDependencies { get; set; }
+        public string[] SupportedFrameworks { get; set; }
 
         /// <summary>
         /// Unused by gallery.
         /// </summary>
         public V2SearchDependency[] Dependencies { get; set; }
-
-        /// <summary>
-        /// Unused by gallery.
-        /// </summary>
-        public string[] SupportedFrameworks { get; set; }
-
         public string MinClientVersion { get; set; }
         public string Hash { get; set; }
         public string HashAlgorithm { get; set; }

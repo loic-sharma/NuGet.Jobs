@@ -10,5 +10,6 @@ namespace NuGet.Services.AzureSearch.SearchService
         public V2SortBy SortBy { get; set; }
         public bool LuceneQuery { get; set; }
         public string PackageType { get; set; }
+        public string SupportedFrameworks { get; set; }
     }
 }

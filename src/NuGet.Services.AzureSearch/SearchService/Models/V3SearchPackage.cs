@@ -53,6 +53,9 @@ namespace NuGet.Services.AzureSearch.SearchService
         [JsonPropertyName("owners")]
         public string[] Owners { get; set; }
 
+        [JsonPropertyName("supportedFrameworks")]
+        public string[] SupportedFrameworks { get; set; }
+
         [JsonPropertyName("totalDownloads")]
         public long TotalDownloads { get; set; }
 

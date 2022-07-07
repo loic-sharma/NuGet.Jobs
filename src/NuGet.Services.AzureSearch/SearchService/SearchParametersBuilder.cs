@@ -83,7 +83,7 @@ namespace NuGet.Services.AzureSearch.SearchService
             }
             else
             {
-                ApplySearchIndexFilter(searchParameters, request, isDefaultSearch, request.PackageType);
+                ApplySearchIndexFilter(searchParameters, request, isDefaultSearch, request.PackageType, request.SupportedFrameworks);
             }
 
             return searchParameters;
@@ -99,7 +99,7 @@ namespace NuGet.Services.AzureSearch.SearchService
             searchParameters.OrderBy.AddRange(ScoreDesc);
 
             ApplyPaging(searchParameters, request);
-            ApplySearchIndexFilter(searchParameters, request, isDefaultSearch, request.PackageType);
+            ApplySearchIndexFilter(searchParameters, request, isDefaultSearch, request.PackageType, request.SupportedFrameworks);
 
             return searchParameters;
         }
@@ -147,7 +147,8 @@ namespace NuGet.Services.AzureSearch.SearchService
             SearchOptions searchParameters,
             SearchRequest request,
             bool isDefaultSearch,
-            string packageType)
+            string packageType,
+            string supportedFrameworks = null)
         {
             var searchFilters = GetSearchFilters(request);
 
@@ -163,6 +164,11 @@ namespace NuGet.Services.AzureSearch.SearchService
             if (packageType != null && PackageIdValidator.IsValidPackageId(packageType))
             {
                 filterString += $" and {IndexFields.Search.FilterablePackageTypes}/any(p: p eq '{packageType.ToLowerInvariant()}')";
+            }
+
+            if (supportedFrameworks != null)
+            {
+                filterString += GetSupportedFrameworksFilterString(supportedFrameworks);
             }
 
             searchParameters.Filter = filterString;
@@ -222,6 +228,28 @@ namespace NuGet.Services.AzureSearch.SearchService
             }
 
             return orderBy;
+        }
+
+        private string GetSupportedFrameworksFilterString(string supportedFrameworks)
+        {
+            var filterString = $" and (";
+
+            string[] frameworks = supportedFrameworks.Split(',');
+            var remainingFrameworkCount = frameworks.Length;
+
+            foreach (var framework in frameworks)
+            {
+                filterString += $"supportedFrameworks/any(f: f eq '{framework.ToLowerInvariant()}')";
+
+                if (--remainingFrameworkCount > 0)
+                {
+                    filterString += $" or ";
+                }
+            }
+
+            filterString += $")";
+
+            return filterString;
         }
     }
 }

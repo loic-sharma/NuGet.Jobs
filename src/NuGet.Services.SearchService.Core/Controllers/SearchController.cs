@@ -68,6 +68,7 @@ namespace NuGet.Services.SearchService.Controllers
             string sortBy = null,
             bool? luceneQuery = true,
             string packageType = null,
+            string supportedFrameworks = null,
             bool? testData = false,
             bool? debug = false)
         {
@@ -85,6 +86,7 @@ namespace NuGet.Services.SearchService.Controllers
                 SortBy = ParameterUtilities.ParseV2SortBy(sortBy),
                 LuceneQuery = luceneQuery ?? true,
                 PackageType = packageType,
+                SupportedFrameworks = supportedFrameworks,
                 IncludeTestData = testData ?? false,
                 ShowDebug = debug ?? false,
             };
@@ -101,6 +103,7 @@ namespace NuGet.Services.SearchService.Controllers
             string semVerLevel = null,
             string q = null,
             string packageType = null,
+            string supportedFrameworks = null,
             bool? testData = false,
             bool? debug = false)
         {
@@ -114,6 +117,7 @@ namespace NuGet.Services.SearchService.Controllers
                 IncludeSemVer2 = ParameterUtilities.ParseIncludeSemVer2(semVerLevel),
                 Query = q,
                 PackageType = packageType,
+                SupportedFrameworks = supportedFrameworks,
                 IncludeTestData = testData ?? false,
                 ShowDebug = debug ?? false,
             };

@@ -9,5 +9,6 @@ namespace NuGet.Services.AzureSearch.SearchService
     public class V3SearchRequest : SearchRequest
     {
         public string PackageType { get; set; }
+        public string SupportedFrameworks { get; set; }
     }
 }

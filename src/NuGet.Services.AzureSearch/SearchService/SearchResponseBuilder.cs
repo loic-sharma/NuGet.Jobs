@@ -384,6 +384,7 @@ namespace NuGet.Services.AzureSearch.SearchService
                 TotalDownloads = AuxiliaryData.GetTotalDownloadCount(result.PackageId),
                 Verified = AuxiliaryData.IsVerified(result.PackageId),
                 PackageTypes = GetV3SearchPackageTypes(result),
+                SupportedFrameworks = result.SupportedFrameworks,
                 Versions = result
                     .Versions
                     .Select(x =>
@@ -493,7 +494,7 @@ namespace NuGet.Services.AzureSearch.SearchService
                 DownloadCount = AuxiliaryData.GetDownloadCount(document.PackageId, document.NormalizedVersion),
                 FlattenedDependencies = document.FlattenedDependencies,
                 Dependencies = EmptyDependencies,
-                SupportedFrameworks = Array.Empty<string>(),
+                SupportedFrameworks = document.SupportedFrameworks,
                 MinClientVersion = document.MinClientVersion,
                 Hash = document.Hash,
                 HashAlgorithm = document.HashAlgorithm,
