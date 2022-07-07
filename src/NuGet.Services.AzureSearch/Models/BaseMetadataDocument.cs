@@ -63,6 +63,9 @@ namespace NuGet.Services.AzureSearch
         [SearchableField(AnalyzerName = DescriptionAnalyzer.Name)]
         public string Summary { get; set; }
 
+        [SimpleField(IsFilterable = true)]
+        public string[] SupportedFrameworks { get; set; }
+
         [SearchableField(AnalyzerName = TagsCustomAnalyzer.Name)]
         public string[] Tags { get; set; }
 

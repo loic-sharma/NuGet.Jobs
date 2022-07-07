@@ -35,6 +35,7 @@ namespace NuGet.Services.AzureSearch
         int? SemVerLevel { get; set; }
         string SortableTitle { get; set; }
         string Summary { get; set; }
+        string[] SupportedFrameworks { get; set; }
         string[] Tags { get; set; }
         string Title { get; set; }
     }
