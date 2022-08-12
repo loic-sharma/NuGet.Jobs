@@ -22,6 +22,7 @@ using NuGet.Versioning;
 using NuGetGallery;
 using Xunit;
 using Xunit.Abstractions;
+using ITelemetryClient = NuGet.Services.Logging.ITelemetryClient;
 
 namespace NuGet.Services.AzureSearch.Catalog2AzureSearch.Integration
 {

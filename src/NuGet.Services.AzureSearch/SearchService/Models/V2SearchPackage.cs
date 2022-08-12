@@ -28,8 +28,8 @@ namespace NuGet.Services.AzureSearch.SearchService
         public DateTimeOffset LastUpdated { get; set; }
         public DateTimeOffset? LastEdited { get; set; }
         public long DownloadCount { get; set; }
-        public string FlattenedDependencies { get; set; }
         public string[] SupportedFrameworks { get; set; }
+        public string FlattenedDependencies { get; set; }
 
         /// <summary>
         /// Unused by gallery.

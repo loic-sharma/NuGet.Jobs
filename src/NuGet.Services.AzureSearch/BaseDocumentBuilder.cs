@@ -18,6 +18,7 @@ namespace NuGet.Services.AzureSearch
 {
     public class BaseDocumentBuilder : IBaseDocumentBuilder
     {
+        private readonly IPackageService _galleryPackageService;
         private static readonly VersionRangeFormatter VersionRangeFormatter = new VersionRangeFormatter();
         private static readonly DateTimeOffset UnlistedPublished = new DateTimeOffset(Metadata.Catalog.Constants.UnpublishedDate);
 
@@ -169,7 +170,7 @@ namespace NuGet.Services.AzureSearch
             document.SemVerLevel = leaf.IsSemVer2() ? SemVerLevelKey.SemVer2 : SemVerLevelKey.Unknown;
             document.SortableTitle = GetSortableTitle(leaf.Title, leaf.PackageId);
             document.Summary = leaf.Summary;
-            document.SupportedFrameworks = GetSupportedFrameworks(leaf);
+            document.SupportedFrameworks = GetSupportedFrameworksFromCatalogLeaf(leaf);
             document.Tags = leaf.Tags == null ? Array.Empty<string>() : leaf.Tags.ToArray();
             document.Title = GetTitle(leaf.Title, leaf.PackageId);
             document.TokenizedPackageId = leaf.PackageId;
@@ -215,13 +216,16 @@ namespace NuGet.Services.AzureSearch
             return output.Trim().ToLowerInvariant();
         }
 
-        private static string[] GetSupportedFrameworks(PackageDetailsCatalogLeaf leaf)
+        private string[] GetSupportedFrameworksFromCatalogLeaf(PackageDetailsCatalogLeaf leaf)
         {
-            string[] frameworks = leaf.DependencyGroups
-                            .Select(dg => dg.ParseTargetFramework())
-                            .Where(f => !f.IsUnsupported)
-                            .Select(f => f.GetShortFolderName())
+            string[] files = leaf.PackageEntries.Count == 0 ? Array.Empty<string>() : leaf.PackageEntries
+                            .Select(pe => pe.FullName)
                             .ToArray();
+
+            string[] frameworks = _galleryPackageService.GetSupportedFrameworks(leaf.PackageId, (IReadOnlyList<Packaging.Core.PackageType>)leaf.PackageTypes, files)
+                                                            .Where(f => !f.IsUnsupported)
+                                                            .Select(f => f.GetShortFolderName())
+                                                            .ToArray();
 
             return frameworks;
         }
