@@ -10,6 +10,7 @@ using NuGet.Frameworks;
 using NuGet.Protocol.Catalog;
 using NuGet.Services.Entities;
 using NuGet.Services.Metadata.Catalog;
+using NuGet.Services.AzureSearch.Mocks;
 using NuGet.Versioning;
 using NuGetGallery;
 using PackageDependency = NuGet.Protocol.Catalog.PackageDependency;
@@ -34,6 +35,7 @@ namespace NuGet.Services.AzureSearch
         public BaseDocumentBuilder(IOptionsSnapshot<AzureSearchJobConfiguration> options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
+            _galleryPackageService = GetPackageService();
         }
 
         public void PopulateUpdated(
@@ -170,7 +172,7 @@ namespace NuGet.Services.AzureSearch
             document.SemVerLevel = leaf.IsSemVer2() ? SemVerLevelKey.SemVer2 : SemVerLevelKey.Unknown;
             document.SortableTitle = GetSortableTitle(leaf.Title, leaf.PackageId);
             document.Summary = leaf.Summary;
-            document.SupportedFrameworks = GetSupportedFrameworksFromCatalogLeaf(leaf);
+            document.SupportedFrameworks = leaf.PackageEntries == null ? null : GetSupportedFrameworksFromCatalogLeaf(leaf);
             document.Tags = leaf.Tags == null ? Array.Empty<string>() : leaf.Tags.ToArray();
             document.Title = GetTitle(leaf.Title, leaf.PackageId);
             document.TokenizedPackageId = leaf.PackageId;
@@ -221,8 +223,9 @@ namespace NuGet.Services.AzureSearch
             string[] files = leaf.PackageEntries.Count == 0 ? Array.Empty<string>() : leaf.PackageEntries
                             .Select(pe => pe.FullName)
                             .ToArray();
+            var packageTypes = leaf.PackageTypes == null ? new List<Packaging.Core.PackageType>() : GetPackageTypes(leaf);
 
-            string[] frameworks = _galleryPackageService.GetSupportedFrameworks(leaf.PackageId, (IReadOnlyList<Packaging.Core.PackageType>)leaf.PackageTypes, files)
+            string[] frameworks = _galleryPackageService.GetSupportedFrameworks(leaf.PackageId, packageTypes, files)
                                                             .Where(f => !f.IsUnsupported)
                                                             .Select(f => f.GetShortFolderName())
                                                             .ToArray();
@@ -338,6 +341,29 @@ namespace NuGet.Services.AzureSearch
                     // whenever someone uploads an unsupported framework
                 }
             }
+        }
+
+        private static List<Packaging.Core.PackageType> GetPackageTypes(PackageDetailsCatalogLeaf leaf)
+        {
+            return leaf.PackageTypes.Count == 0 ? new List<Packaging.Core.PackageType>() : leaf.PackageTypes
+                        .Select(pt => new Packaging.Core.PackageType(pt.Name, new Version(pt.Version)))
+                        .ToList();
+        }
+
+        private static PackageService GetPackageService()
+        {
+            var packageRegistrationRepository = new MockEntityRepository<PackageRegistration>();
+            var packageRepository = new MockEntityRepository<Package>();
+            var certificateRepository = new MockEntityRepository<Certificate>();
+            var auditingService = new MockAuditingService();
+            var entitiesContext = new MockEntitiesContext();
+
+            return new PackageService(
+                packageRegistrationRepository,
+                packageRepository,
+                certificateRepository,
+                auditingService,
+                entitiesContext);
         }
     }
 }

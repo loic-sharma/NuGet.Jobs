@@ -81,6 +81,40 @@ namespace NuGet.Services.AzureSearch
             }
 
             [Fact]
+            public void AddsSupportedFrameworks()
+            {
+                var leaf = new PackageDetailsCatalogLeaf
+                {
+                    PackageId = Data.PackageId,
+                    PackageVersion = Data.NormalizedVersion,
+                    PackageTypes = new List<NuGet.Protocol.Catalog.PackageType>(),
+                    PackageEntries = new List<NuGet.Protocol.Catalog.PackageEntry>
+                    {
+                        new NuGet.Protocol.Catalog.PackageEntry
+                        {
+                            FullName = "lib/netstandard2.1/Package.dll",
+                            Name = "Package.dll"
+                        },
+                        new NuGet.Protocol.Catalog.PackageEntry
+                        {
+                            FullName = "lib/net472/Package.dll",
+                            Name = "Package.dll"
+                        },
+                    },
+                };
+                var full = new HijackDocument.Full();
+
+                Target.PopulateMetadata(full, Data.NormalizedVersion, leaf);
+
+                string[] expected = {"netstandard2.1", "net472"};
+
+                foreach (var item in expected)
+                {
+                    Assert.Contains(item, full.SupportedFrameworks);
+                }
+            }
+
+            [Fact]
             public void AddsEmptyArrayForNullTags()
             {
                 var leaf = new PackageDetailsCatalogLeaf
