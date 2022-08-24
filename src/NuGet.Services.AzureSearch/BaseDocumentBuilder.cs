@@ -10,7 +10,6 @@ using NuGet.Frameworks;
 using NuGet.Protocol.Catalog;
 using NuGet.Services.Entities;
 using NuGet.Services.Metadata.Catalog;
-using NuGet.Services.AzureSearch.Mocks;
 using NuGet.Versioning;
 using NuGetGallery;
 using PackageDependency = NuGet.Protocol.Catalog.PackageDependency;
@@ -19,7 +18,6 @@ namespace NuGet.Services.AzureSearch
 {
     public class BaseDocumentBuilder : IBaseDocumentBuilder
     {
-        private readonly IPackageService _galleryPackageService;
         private static readonly VersionRangeFormatter VersionRangeFormatter = new VersionRangeFormatter();
         private static readonly DateTimeOffset UnlistedPublished = new DateTimeOffset(Metadata.Catalog.Constants.UnpublishedDate);
 
@@ -35,7 +33,6 @@ namespace NuGet.Services.AzureSearch
         public BaseDocumentBuilder(IOptionsSnapshot<AzureSearchJobConfiguration> options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
-            _galleryPackageService = GetPackageService();
         }
 
         public void PopulateUpdated(
@@ -226,7 +223,7 @@ namespace NuGet.Services.AzureSearch
                             .ToArray();
             var packageTypes = leaf.PackageTypes == null ? new List<Packaging.Core.PackageType>() : GetPackageTypes(leaf);
 
-            string[] frameworks = _galleryPackageService.GetSupportedFrameworks(leaf.PackageId, packageTypes, files)
+            string[] frameworks = AssetFrameworkService.GetSupportedFrameworks(leaf.PackageId, packageTypes, files)
                                                             .Where(f => !f.IsUnsupported)
                                                             .Select(f => f.GetShortFolderName())
                                                             .Where(f => f != null)
@@ -350,22 +347,6 @@ namespace NuGet.Services.AzureSearch
             return leaf.PackageTypes.Count == 0 ? new List<Packaging.Core.PackageType>() : leaf.PackageTypes
                         .Select(pt => new Packaging.Core.PackageType(pt.Name, new Version(pt.Version)))
                         .ToList();
-        }
-
-        private static PackageService GetPackageService()
-        {
-            var packageRegistrationRepository = new MockEntityRepository<PackageRegistration>();
-            var packageRepository = new MockEntityRepository<Package>();
-            var certificateRepository = new MockEntityRepository<Certificate>();
-            var auditingService = new MockAuditingService();
-            var entitiesContext = new MockEntitiesContext();
-
-            return new PackageService(
-                packageRegistrationRepository,
-                packageRepository,
-                certificateRepository,
-                auditingService,
-                entitiesContext);
         }
     }
 }

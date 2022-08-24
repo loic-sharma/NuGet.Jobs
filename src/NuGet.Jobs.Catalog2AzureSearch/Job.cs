@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NuGet.Services.AzureSearch;
 using NuGet.Services.AzureSearch.Catalog2AzureSearch;
 using NuGet.Services.V3;
-using NuGetGallery;
 
 namespace NuGet.Jobs
 {
@@ -25,8 +24,6 @@ namespace NuGet.Jobs
             services.Configure<AzureSearchConfiguration>(configurationRoot.GetSection(ConfigurationSectionName));
             services.Configure<AzureSearchJobDevelopmentConfiguration>(
                 configurationRoot.GetSection(DevelopmentConfigurationSectionName));
-
-            services.AddTransient<IPackageService, PackageService>();
         }
     }
 }

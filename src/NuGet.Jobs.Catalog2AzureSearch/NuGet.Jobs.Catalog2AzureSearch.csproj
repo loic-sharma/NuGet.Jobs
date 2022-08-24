@@ -57,9 +57,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="NuGetGallery.Services">
-      <Version>4.4.5-dev-advay26-searchbytfm-6549245</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Catalog\NuGet.Services.Metadata.Catalog.csproj">
